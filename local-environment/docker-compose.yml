@@ -1,0 +1,40 @@
+version: "3.2"
+services:
+  mysql:
+    container_name: mongo
+    ports:
+      - 27017:27017
+    restart: always
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin_passwd
+#    volumes:
+#      - "$PWD/mongo/data:/data/db"
+    networks:
+      - application
+  sonarqube:
+    image: library/sonarqube:7.8-community
+    depends_on:
+      - db
+    ports:
+      - "9000:9000"
+    environment:
+      SONARQUBE_JDBC_USERNAME: sonar
+      SONARQUBE_JDBC_PASSWORD: sonar
+      SONARQUBE_JDBC_URL: jdbc:postgresql://db:5432/sonar
+    networks:
+      - application
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    networks:
+      - application
+networks:
+  application:
+    name: application
